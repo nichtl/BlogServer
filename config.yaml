@@ -13,7 +13,7 @@ jwt:
 zap:
   level: info
   format: console
-  prefix: "[github.com/flipped-aurora/gin-vue-admin/server]"
+  prefix: "[BlogServer]"
   director: log
   show-line: true
   encode-level: LowercaseColorLevelEncoder
