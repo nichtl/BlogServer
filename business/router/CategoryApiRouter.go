@@ -5,17 +5,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CategoryApiRouter struct{}
+type CategoryAPIRouter struct{}
 
-func (b *BaseRouter) InitCategoryApiRouter(c *gin.RouterGroup) (R gin.IRoutes) {
+func (base *BaseRouter) InitCategoryAPIRouter(c *gin.RouterGroup) (r gin.IRoutes) {
 	group := c.Group("category")
 
-	categoryApi := api.ApiGroupApp.BaseApi
+	categoryAPI := api.ApiGroupApp.BaseAPI
 
 	{
-		group.GET("/detail/:id", categoryApi.QueryCategoryById)
-		group.GET("/sub/:id", categoryApi.QueryChildrenById)
-		group.GET("/main", categoryApi.QueryAllFirstCategory)
+		group.GET("/detail/:id", categoryAPI.QueryCategoryByID)
+		group.GET("/children/:id", categoryAPI.QueryChildrenByID)
+		group.GET("/FirstLevelCategory", categoryAPI.QueryAllFirstCategory)
+		group.GET("/del/:id", categoryAPI.DeleteCategory)
+		group.POST("/add", categoryAPI.CreateCategory)
 	}
 
 	return group

@@ -4,7 +4,7 @@ import (
 	"blogServe/business/service"
 )
 
-type BaseApi struct{}
+type BaseAPI struct{}
 
 var (
 	userService     = service.UserService{}

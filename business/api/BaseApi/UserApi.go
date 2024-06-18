@@ -2,6 +2,7 @@ package api
 
 import (
 	"blogServe/business/global"
+	"blogServe/business/model"
 	Req "blogServe/business/model/request"
 	Res "blogServe/business/model/response"
 	"blogServe/business/utils"
@@ -9,12 +10,13 @@ import (
 	"errors"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 	"time"
 )
 
-type UserApi struct{}
+type UserAPI struct{}
 
-func (base *BaseApi) RegisterUser(c *gin.Context) {
+func (base *BaseAPI) RegisterUser(c *gin.Context) {
 	var registerDto Req.RegisterUserDto
 	err := c.ShouldBindJSON(&registerDto)
 	if err != nil {
@@ -22,9 +24,9 @@ func (base *BaseApi) RegisterUser(c *gin.Context) {
 		return
 	}
 	validate := validation.Validation{}
-	_, err = validate.Valid(&registerDto)
-	if err != nil {
-		Res.ErrorWithMsg(err.Error(), c)
+	vr, _ := validate.Valid(&registerDto)
+	if !vr {
+		Res.ErrorWithMsg("invalid param", c)
 		return
 	}
 
@@ -33,7 +35,7 @@ func (base *BaseApi) RegisterUser(c *gin.Context) {
 		Res.ErrorWithMsg(err.Error(), c)
 		return
 	}
-	user, err := userService.SelectUserById(int(id))
+	user, err := userService.SelectUserByID(int(id))
 	if err != nil {
 		Res.ErrorWithMsg(err.Error(), c)
 		return
@@ -44,7 +46,7 @@ func (base *BaseApi) RegisterUser(c *gin.Context) {
 	Res.OkData(data, c)
 }
 
-func (base *BaseApi) Login(c *gin.Context) {
+func (base *BaseAPI) Login(c *gin.Context) {
 	var loginDto Req.LoginDto
 	err := c.ShouldBindJSON(&loginDto)
 	if err != nil {
@@ -52,7 +54,7 @@ func (base *BaseApi) Login(c *gin.Context) {
 		return
 	}
 	valid := validation.Validation{}
-	ok, err := valid.Valid(&loginDto)
+	ok, _ := valid.Valid(&loginDto)
 	if !ok {
 		Res.ErrorWithMsg("invalid param", c)
 	}
@@ -75,7 +77,7 @@ func (base *BaseApi) Login(c *gin.Context) {
 	Res.OkData(data, c)
 }
 
-func (base *BaseApi) CreateToken(userName string, password string) (token string, err error) {
+func (base *BaseAPI) CreateToken(userName string, password string) (token string, err error) {
 	user, isExist := userService.CheckAuthUser(userName, password)
 	if !isExist {
 		return "", errors.New("not exist user")
@@ -95,11 +97,10 @@ func (base *BaseApi) CreateToken(userName string, password string) (token string
 	return token, nil
 }
 
-func (base *BaseApi) LogoutByUser(c *gin.Context) {
-
+func (base *BaseAPI) UpdateUser(c *gin.Context) {
 	var loginDto Req.LoginDto
 	err := c.ShouldBindJSON(&loginDto)
-	if loginDto.Id <= 0 {
+	if loginDto.ID <= 0 {
 		Res.ErrorWithMsg("invalid param", c)
 		return
 	}
@@ -107,7 +108,28 @@ func (base *BaseApi) LogoutByUser(c *gin.Context) {
 		Res.ErrorWithMsg(err.Error(), c)
 		return
 	}
-	user, err := userService.SelectUserById(int(loginDto.Id))
+	var user model.User
+	err = copier.CopyWithOption(&user, &loginDto, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	count, err := userService.UpdateUser(user)
+
+	if err != nil {
+		Res.ErrorWithMsg(err.Error(), c)
+		return
+	}
+	Res.OkData(count, c)
+}
+func (base *BaseAPI) LogoutByUser(c *gin.Context) {
+	var loginDto Req.LoginDto
+	err := c.ShouldBindJSON(&loginDto)
+	if loginDto.ID <= 0 {
+		Res.ErrorWithMsg("invalid param", c)
+		return
+	}
+	if err != nil {
+		Res.ErrorWithMsg(err.Error(), c)
+		return
+	}
+	user, err := userService.SelectUserByID(int(loginDto.ID))
 	if err != nil {
 		Res.ErrorWithMsg(err.Error(), c)
 		return
@@ -118,7 +140,6 @@ func (base *BaseApi) LogoutByUser(c *gin.Context) {
 	}
 	redisClient := global.RedisClient
 	ctx := context.Background()
-	err = redisClient.Del(ctx, global.TOKEN_PREFIX+user.Account).Err()
+	_ = redisClient.Del(ctx, global.TOKEN_PREFIX+user.Account).Err()
 	Res.Ok(c)
-	return
 }

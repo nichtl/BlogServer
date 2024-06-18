@@ -2,20 +2,21 @@ package route
 
 import (
 	"blogServe/business/global"
+	"blogServe/business/middleware/cros"
 	"blogServe/business/middleware/jwt"
+	"blogServe/business/middleware/log"
 	"blogServe/business/router"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Route /**
 func Route() *gin.Engine {
 
-	Router := gin.Default()
+	Router := gin.New()
+	Router.Use(log.ZapLogger(), gin.Recovery(), cros.Cors())
 
 	baseApiRouter := router.RouterGroupApp
-
 	PublicGroup := Router.Group(global.Config.Serve.Name)
 	PrivateGroup := Router.Group(global.Config.Serve.Name)
 
@@ -40,10 +41,10 @@ func Route() *gin.Engine {
 			})
 		})
 
-		baseApiRouter.BaseRouter.InitUserApiRouter(PublicGroup)
-		baseApiRouter.BaseRouter.InitCategoryApiRouter(PublicGroup)
+		baseApiRouter.BaseRouter.InitUserAPIPublicRouter(PublicGroup)
+		baseApiRouter.BaseRouter.InitCategoryAPIRouter(PublicGroup)
 		baseApiRouter.BaseRouter.InitArticleApiRouter(PublicGroup)
-		baseApiRouter.BaseRouter.InitTagApiRouter(PublicGroup)
+		baseApiRouter.BaseRouter.InitTagAPIRouter(PublicGroup)
 	}
 
 	PrivateGroup.Use(jwt.JWT())

@@ -29,7 +29,7 @@ func (u *RegisterUserDto) Valid(v *validation.Validation) {
 		v.Email(u, "Email").Message("邮箱格式有误")
 	}
 	v.Required(u, "Account").Message("账户不能为空")
-	v.MinSize(u, 6, "Account").Message("长度必须在6到30之间")
+	v.MinSize(u.Account, 6, "Account").Message("长度必须在6到30之间")
 	v.MaxSize(u, 30, "Account").Message("长度必须在6到30之间")
 	v.Required(u, "Password").Message("密码不能为空")
 	v.MinSize(u, 9, "Password").Message("长度必须在9到30之间")

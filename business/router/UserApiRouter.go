@@ -5,13 +5,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (base *BaseRouter) InitUserApiRouter(c *gin.RouterGroup) (R gin.IRoutes) {
-	userApiGroup := c.Group("user")
-	userApi := api.ApiGroupApp.BaseApi
+func (base *BaseRouter) InitUserAPIPublicRouter(c *gin.RouterGroup) (r gin.IRoutes) {
+	userAPIGroup := c.Group("user")
+	userAPI := api.ApiGroupApp.BaseAPI
 	{
-		userApiGroup.POST("/login", userApi.Login)
-		userApiGroup.POST("/register", userApi.RegisterUser)
-		userApiGroup.POST("/loginOut", userApi.LogoutByUser)
+		userAPIGroup.POST("/login", userAPI.Login)
+		userAPIGroup.POST("/update", userAPI.UpdateUser)
+		userAPIGroup.POST("/register", userAPI.RegisterUser)
+		userAPIGroup.POST("/loginOut", userAPI.LogoutByUser)
+		userAPIGroup.POST("/logout", userAPI.LogoutByUser)
 	}
-	return userApiGroup
+	return userAPIGroup
 }

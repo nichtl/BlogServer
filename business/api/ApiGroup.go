@@ -5,11 +5,11 @@ import (
 )
 
 type ApiGroup struct {
-	base.BaseApi
-	base.CategoryApi
-	base.UserApi
-	base.ArticleApi
-	base.TagApi
+	base.BaseAPI
+	base.CategoryAPI
+	base.UserAPI
+	base.ArticleAPI
+	base.TagAPI
 }
 
 var ApiGroupApp = new(ApiGroup)

@@ -23,7 +23,10 @@ func InitMysql() *gorm.DB {
 		DefaultStringSize:         191,   // string 类型字段的默认长度
 		SkipInitializeWithVersion: false, // 根据版本自动配置}
 	}
-	db, err := gorm.Open(mysql.New(mysqlConnectConfig), &gorm.Config{})
+	gormConf := &gorm.Config{}
+	gormConf.Logger = global.Config.GormConfig.GetLogLevel()
+
+	db, err := gorm.Open(mysql.New(mysqlConnectConfig), gormConf)
 	if err != nil {
 		panic(err)
 	}

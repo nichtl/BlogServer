@@ -18,7 +18,7 @@ func (s *UserService) CreateUser(register request.RegisterUserDto) (id int64, er
 		return 0, err
 	}
 	user := model.User{}
-	err = copier.Copy(&register, &user)
+	err = copier.CopyWithOption(&user, &register, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	if err != nil {
 		return 0, errors.New("copier.Copy failed" + err.Error())
 	}
@@ -32,9 +32,9 @@ func (s *UserService) CreateUser(register request.RegisterUserDto) (id int64, er
 
 func (s *UserService) UpdateUser(user model.User) (id int64, err error) {
 	db := global.DefaultDb
-	r := db.Where("id = ?", user.ID)
+	r := db.Model(&user).Updates(user)
 	if r.Error != nil {
-		return 0, errors.New("CreateUser failed" + r.Error.Error())
+		return 0, errors.New("UpdateUser failed" + r.Error.Error())
 	}
 	return user.ID, nil
 }
@@ -49,21 +49,21 @@ func (s *UserService) CheckAuthUser(username, password string) (user *model.User
 	}
 	return user, true
 }
+
 func (s *UserService) SelectByNameAndPass(name string, pass string) (user *model.User, err error) {
 	if name == "" || pass == "" {
 		return nil, errors.New("用户名或密码不能为空")
 	}
 	db := global.DefaultDb
-	db = db.Where("del_flag = 0")
 	err = db.Where("account  = ? AND password = ?", name, pass).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
-func (s *UserService) SelectUserById(id int) (user *model.User, err error) {
+
+func (s *UserService) SelectUserByID(id int) (user *model.User, err error) {
 	db := global.DefaultDb
-	db = db.Where("del_flag = 0")
 	err = db.Where("id = ", id).First(&user).Error
 	if err != nil {
 		return nil, err
@@ -80,4 +80,15 @@ func (s *UserService) SelectUserListByName(name string) (user []*model.User, err
 		return nil, err
 	}
 	return user, err
+}
+
+func (s *UserService) delUserByID(id int64) (count int64, err error) {
+	db := global.DefaultDb
+	user := &model.User{}
+	user.ID = id
+	err = db.Delete(user).Error
+	if err != nil {
+		return 0, err
+	}
+	return db.RowsAffected, nil
 }

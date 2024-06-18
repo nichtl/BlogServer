@@ -9,11 +9,14 @@ jwt:
   buffer-time: 1d
   issuer: qmPlus
 
+gormConfig:
+  logLevel: info
+
 # zap logger configuration
 zap:
-  level: info
+  level: debug
   format: console
-  prefix: "[BlogServer]"
+  prefix: "[blogServer]"
   director: log
   show-line: true
   encode-level: LowercaseColorLevelEncoder
@@ -23,8 +26,8 @@ zap:
 # redis configuration
 redis:
   db: 0
-  host:
-  password:
+  host: 82.156.165.91
+  password: "nicht123456"
   port: 6379
 
 # mongo configuration
@@ -82,12 +85,12 @@ captcha:
 # 未初始化之前请勿手动修改数据库信息！！！如果一定要手动初始化请看（https://gin-vue-admin.com/docs/first_master）
 mysql:
   name: "master"
-  host: ""
+  host: "82.156.165.91"
   port: "3306"
   config: "charset=utf8mb4&parseTime=True&loc=Local"
   database: "website"
   username: "root"
-  password: ""
+  password: "Root@123456"
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: ""

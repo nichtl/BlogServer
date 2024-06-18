@@ -1,14 +1,15 @@
 package api
 
 import (
+	Req "blogServe/business/model/request"
 	Res "blogServe/business/model/response"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
-type CategoryApi struct{}
+type CategoryAPI struct{}
 
-func (c *BaseApi) QueryAllFirstCategory(context *gin.Context) {
+func (base *BaseAPI) QueryAllFirstCategory(context *gin.Context) {
 	categorys, err := categoryService.FindFirstAll()
 	if err != nil {
 		Res.ErrorWithMsg(err.Error(), context)
@@ -18,7 +19,7 @@ func (c *BaseApi) QueryAllFirstCategory(context *gin.Context) {
 	return
 }
 
-func (c *BaseApi) QueryChildrenById(context *gin.Context) {
+func (base *BaseAPI) QueryChildrenByID(context *gin.Context) {
 	id := context.Param("id")
 	if id == "" {
 		Res.ErrorWithMsg("id is required", context)
@@ -29,7 +30,26 @@ func (c *BaseApi) QueryChildrenById(context *gin.Context) {
 		Res.ErrorWithMsg("id is invalid", context)
 		return
 	}
-	category, err := categoryService.FindChildrenByFatherId(v)
+	category, err := categoryService.FindChildrenByFatherID(v)
+	if err != nil {
+		Res.ErrorWithMsg(err.Error(), context)
+		return
+	}
+	Res.OkData(category, context)
+}
+
+func (base *BaseAPI) QueryCategoryByID(context *gin.Context) {
+	id := context.Param("id")
+	if id == "" {
+		Res.ErrorWithMsg("id is required", context)
+		return
+	}
+	v, err := strconv.Atoi(id)
+	if err != nil {
+		Res.ErrorWithMsg("id is invalid", context)
+		return
+	}
+	category, err := categoryService.FindCategoryByID(v)
 	if err != nil {
 		Res.ErrorWithMsg(err.Error(), context)
 		return
@@ -38,22 +58,36 @@ func (c *BaseApi) QueryChildrenById(context *gin.Context) {
 	return
 }
 
-func (c *BaseApi) QueryCategoryById(context *gin.Context) {
-	id := context.Param("id")
+func (base *BaseAPI) CreateCategory(context *gin.Context) {
+	var categoryDto Req.CategoryDto
+	err := context.ShouldBindJSON(&categoryDto)
+	if err != nil {
+		Res.ErrorWithMsg("invalid param", context)
+	}
+
+	id, err := categoryService.CreateCategory(categoryDto)
+	if err != nil {
+		Res.ErrorWithMsg("create article failed", context)
+		return
+	}
+	Res.OkData(id, context)
+}
+
+func (base *BaseAPI) DeleteCategory(c *gin.Context) {
+	id := c.Param("id")
 	if id == "" {
-		Res.ErrorWithMsg("id is required", context)
+		Res.ErrorWithMsg("id can't be empty", c)
 		return
 	}
-	v, err := strconv.Atoi(id)
+	convID, err := strconv.Atoi(id)
 	if err != nil {
-		Res.ErrorWithMsg("id is invalid", context)
+		Res.ErrorWithMsg("invalid id ", c)
 		return
 	}
-	category, err := categoryService.FindCategoryById(v)
-	if err != nil {
-		Res.ErrorWithMsg(err.Error(), context)
+	count, err := categoryService.DelByID(int64(convID))
+	if count <= 0 || err != nil {
+		Res.ErrorWithMsg("delete category failed", c)
 		return
 	}
-	Res.OkData(category, context)
-	return
+	Res.OkData(count, c)
 }

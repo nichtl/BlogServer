@@ -9,22 +9,22 @@ import (
 
 type Init struct{}
 
-func InitConfig(configFile string, configType string) config.GlobalConfig {
-	if configFile == "" {
-		configFile = "config.yaml"
+func InitConfig(configFilePath string, configType string) config.GlobalConfig {
+	if configFilePath == "" {
+		configFilePath = "config.yaml"
 	}
 	if configType == "" {
 		configType = "yaml"
 	}
 	v := viper.New()
 	v.Debug()
-	if _, err := os.Stat("config.yaml"); os.IsNotExist(err) {
+	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
 		fmt.Println("配置文件不存在")
 		// 可以进行其他处理，如使用默认配置
 	}
 	v.AddConfigPath(".")
-	v.SetConfigFile("config.yaml")
-	v.SetConfigType("yaml")
+	v.SetConfigFile(configFilePath)
+	v.SetConfigType(configType)
 	err := v.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
