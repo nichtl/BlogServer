@@ -26,8 +26,8 @@ zap:
 # redis configuration
 redis:
   db: 0
-  host: 82.156.165.91
-  password: "nicht123456"
+  host:
+  password:
   port: 6379
 
 # mongo configuration
@@ -85,12 +85,12 @@ captcha:
 # 未初始化之前请勿手动修改数据库信息！！！如果一定要手动初始化请看（https://gin-vue-admin.com/docs/first_master）
 mysql:
   name: "master"
-  host: "82.156.165.91"
+  host: ""
   port: "3306"
   config: "charset=utf8mb4&parseTime=True&loc=Local"
   database: "website"
   username: "root"
-  password: "Root@123456"
+  password: ""
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: ""
@@ -227,14 +227,6 @@ aliyun-oss:
   bucket-url: yourBucketUrl
   base-path: yourBasePath
 
-# tencent cos configuration
-tencent-cos:
-  bucket: xxxxx-10005608
-  region: ap-shanghai
-  secret-id: your-secret-id
-  secret-key: your-secret-key
-  base-url: https://gin.vue.admin
-  path-prefix: github.com/flipped-aurora/gin-vue-admin/server
 
 # aws s3 configuration (minio compatible)
 aws-s3:
