@@ -34,7 +34,7 @@ func InitConfig(configFilePath string, configType string) config.GlobalConfig {
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
-	fmt.Println(confFig.Redis.Db)
+	fmt.Println(confFig.Redis.DB)
 	fmt.Println(confFig.Redis.Host)
 	fmt.Println(confFig.Redis.Port)
 	fmt.Println(confFig.Redis.Password)

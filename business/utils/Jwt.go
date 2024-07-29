@@ -9,17 +9,19 @@ import (
 var jwtSecret = []byte(global.Config.Jwt.SigningKey)
 
 type Claims struct {
+	ID       string `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Account  string `json:"account"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(username, password, account string) (string, error) {
+func GenerateToken(id, username, password, account string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(3 * time.Hour)
 
 	claims := Claims{
+		id,
 		username,
 		password,
 		account,

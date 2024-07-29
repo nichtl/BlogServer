@@ -3,7 +3,7 @@ package config
 import "strconv"
 
 type Redis struct {
-	Db       int    `json:"db" mapstructure:"db" yaml:"db"`
+	DB       int    `json:"db" mapstructure:"db" yaml:"db"`
 	Port     int16  `json:"port" mapstructure:"port" yaml:"port"`
 	Host     string `json:"host" mapstructure:"host" yaml:"host"`
 	Password string `json:"password" mapstructure:"password" yaml:"password"`

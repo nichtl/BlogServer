@@ -20,9 +20,11 @@ func main() {
 	global.RedisClient = initRedis.InitRedis()
 	route := initRoute.Route()
 	defer func() {
-		err := global.RedisClient.Close()
-		if err != nil {
-			global.LOG.Error("redis close occur error"+err.Error(), zap.Any("err", err))
+		if global.RedisClient != nil {
+			err := global.RedisClient.Close()
+			if err != nil {
+				global.LOG.Error("redis close occur error"+err.Error(), zap.Any("err", err))
+			}
 		}
 		if db, err := global.DefaultDb.DB(); err == nil {
 			err = db.Close()
@@ -30,12 +32,10 @@ func main() {
 				global.LOG.Error("database close occur error"+err.Error(), zap.Any("err", err))
 			}
 		}
-
 	}()
 	port := fmt.Sprintf(":%d", global.Config.Serve.Port)
 	s := initialize.InitAndStartServeUseGin(port, route)
 	fmt.Println("server started at port ", port)
 	err := s.ListenAndServe().Error()
-
 	fmt.Println("listen error ", err)
 }

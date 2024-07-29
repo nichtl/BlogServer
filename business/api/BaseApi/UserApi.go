@@ -6,11 +6,11 @@ import (
 	Req "blogServe/business/model/request"
 	Res "blogServe/business/model/response"
 	"blogServe/business/utils"
-	"context"
 	"errors"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
+	"strconv"
 	"time"
 )
 
@@ -66,7 +66,7 @@ func (base *BaseAPI) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := base.CreateToken(loginDto.UserName, loginDto.Password)
+	token, err := base.CreateToken(strconv.Itoa(int(user.ID)), loginDto.UserName, loginDto.Password)
 	if err != nil {
 		Res.ErrorWithMsg(err.Error(), c)
 	}
@@ -77,23 +77,19 @@ func (base *BaseAPI) Login(c *gin.Context) {
 	Res.OkData(data, c)
 }
 
-func (base *BaseAPI) CreateToken(userName string, password string) (token string, err error) {
+func (base *BaseAPI) CreateToken(id, userName, password string) (token string, err error) {
 	user, isExist := userService.CheckAuthUser(userName, password)
 	if !isExist {
 		return "", errors.New("not exist user")
 	}
-	token, err = utils.GenerateToken(userName, password, user.Account)
+	token, err = utils.GenerateToken(id, userName, password, user.Account)
 	if err != nil {
 		return "", err
 	}
-	redisClient := global.RedisClient
-	ctx := context.Background()
-	err = redisClient.Set(ctx, global.TOKEN_PREFIX+user.Account, token, global.NUM_FIVE*time.Hour).Err()
-
+	err = utils.Set(global.TokenPrefix+id, token, global.NumFive, time.Hour)
 	if err != nil {
 		return "", err
 	}
-
 	return token, nil
 }
 
@@ -138,8 +134,6 @@ func (base *BaseAPI) LogoutByUser(c *gin.Context) {
 		Res.ErrorWithMsg("用户账户不存在", c)
 		return
 	}
-	redisClient := global.RedisClient
-	ctx := context.Background()
-	_ = redisClient.Del(ctx, global.TOKEN_PREFIX+user.Account).Err()
+	_ = utils.Del(global.TokenPrefix + strconv.Itoa(int(user.ID)))
 	Res.Ok(c)
 }

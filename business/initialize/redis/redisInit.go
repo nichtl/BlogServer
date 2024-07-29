@@ -9,7 +9,7 @@ func InitRedis() (client *redis.Client) {
 	client = redis.NewClient(&redis.Options{
 		Addr:     global.Config.Redis.GetAddr(),
 		Password: global.Config.Redis.Password, // no password set
-		DB:       global.Config.Redis.Db,       // use default DB
+		DB:       global.Config.Redis.DB,       // use default DB
 	})
 	return client
 }

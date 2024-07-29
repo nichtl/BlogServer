@@ -3,27 +3,27 @@ package global
 type GlobalConst struct{}
 
 const (
-	NUM_ONE = iota + 1
-	NUM_TWO
-	NUM_THREE
-	NUM_FOUR
-	NUM_FIVE
-	NUM_SIX
-	NUM_SEV
-	NUM_EIGHT
-	NUM_NINE
-	NUM_TEN
+	NumOne = iota + 1
+	NumTwo
+	NumThree
+	NumFour
+	NumFive
+	NumSix
+	NumSeven
+	NumEight
+	NumNine
+	NumTen
 )
 
 const (
-	SUCCESS_CODE  = 10000
-	ERROR_CODE    = 9999
-	INVALID_TOKEN = iota + 9000
-	INVALID_PARAMS
-	EXPIRE_TOKEN
+	SuccessCode  = 10000
+	ErrorCode    = 9999
+	InvalidToken = iota + 9000
+	InvalidParams
+	ExpireToken
 )
 
 const (
-	TOKEN_PREFIX         = "BLOG_USER_TOKEN_"
-	TOKEN_EXPIRE_SECONDS = 3600
+	TokenPrefix        = "BLOG_USER_TOKEN_"
+	TokenExpireSeconds = 3600
 )

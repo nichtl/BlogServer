@@ -3,7 +3,6 @@ package jwt
 import (
 	"blogServe/business/global"
 	"blogServe/business/utils"
-	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -13,30 +12,30 @@ func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int
 		var data interface{}
-		code = global.SUCCESS_CODE
-		token := c.Query("token")
+		code = global.SuccessCode
+		token := c.GetHeader("token")
 		if token == "" {
-			token = c.GetHeader("token")
+			token = c.Query("token")
 		}
 		if token == "" {
-			code = global.INVALID_PARAMS
+			code = global.InvalidParams
 		} else {
 			claims, err := utils.ParseToken(token)
 			if err != nil {
-				code = global.INVALID_TOKEN
+				code = global.InvalidToken
 			} else if time.Now().Unix() > claims.ExpiresAt {
-				code = global.EXPIRE_TOKEN
+				code = global.ExpireToken
 			}
-			val, err := global.RedisClient.Get(context.Background(), global.TOKEN_PREFIX+claims.Account).Result()
-
+			val, err := utils.Get(global.TokenPrefix + claims.ID)
 			if err != nil {
-				code = global.ERROR_CODE
+				code = global.ErrorCode
 			}
 			if val != token {
-				code = global.INVALID_TOKEN
+				code = global.InvalidToken
 			}
+			c.AddParam("token", token)
 		}
-		if code != global.SUCCESS_CODE {
+		if code != global.SuccessCode {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": code,
 				"msg":  "Token鉴权不通过",
@@ -45,6 +44,7 @@ func JWT() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
 		c.Next()
 	}
 }
