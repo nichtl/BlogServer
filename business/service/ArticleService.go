@@ -26,7 +26,7 @@ func (a *ArticleService) QueryArticleList(dto request.ArticleDto) (articles []*m
 		db = db.Where("update_time = ?", dto.Article.UpdateTime)
 	}
 	if dto.PageNum <= 0 || dto.PageSize <= 0 {
-		dto.PageSize = global.NUM_TEN
+		dto.PageSize = global.NumTen
 		dto.PageNum = global.NumOne
 	}
 	db = db.Limit(dto.PageSize).Offset((dto.PageNum - 1) * dto.PageSize)

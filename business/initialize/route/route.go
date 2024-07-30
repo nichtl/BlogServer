@@ -29,6 +29,14 @@ func Route() *gin.Engine {
 				"data":    gin.H{"status": "ok"},
 			})
 		})
+		PublicGroup.GET("/getJwt", func(context *gin.Context) {
+			context.JSON(http.StatusOK, gin.H{
+				"msg":     "success",
+				"success": true,
+				"code":    710000,
+				"data":    "1SQMALINSKQ61JNMSkM=",
+			})
+		})
 		PublicGroup.GET("/hello", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"msg":     "success",
@@ -41,22 +49,14 @@ func Route() *gin.Engine {
 			})
 		})
 
-		baseApiRouter.BaseRouter.InitUserAPIPublicRouter(PublicGroup)
-		baseApiRouter.BaseRouter.InitCategoryAPIRouter(PublicGroup)
-		baseApiRouter.BaseRouter.InitArticleApiRouter(PublicGroup)
-		baseApiRouter.BaseRouter.InitTagAPIRouter(PublicGroup)
 	}
 
 	PrivateGroup.Use(jwt.JWT())
 	{
-		PrivateGroup.GET("/getJwt", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"msg":     "success",
-				"success": true,
-				"code":    710000,
-				"data":    "1SQMALINSKQ61JNMSkM=",
-			})
-		})
+		baseApiRouter.BaseRouter.InitUserAPIPublicRouter(PrivateGroup)
+		baseApiRouter.BaseRouter.InitCategoryAPIRouter(PrivateGroup)
+		baseApiRouter.BaseRouter.InitArticleApiRouter(PrivateGroup)
+		baseApiRouter.BaseRouter.InitTagAPIRouter(PrivateGroup)
 
 	}
 
