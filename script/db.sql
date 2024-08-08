@@ -3,8 +3,9 @@ create table if not exists article
     id           bigint auto_increment
     primary key,
     title        varchar(256) default ''                not null comment '标题',
-    content      longtext                               null comment '内容',
+    content      longtext                               null comment 'text内容',
     intro        varchar(512) default ''                not null comment '介绍',
+    file_url     varchar(512) default ''                not null comment 'url',
     user_id      int                                    null,
     user_account varchar(128) default ''                not null,
     del_flag     int          default 0                 not null,
